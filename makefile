@@ -12,6 +12,9 @@ RUN ?= docker run -it --rm  \
 
 # Make tiler docker
 
+wesm-index:
+	$(RUN) python3 utils/build-index.py
+
 local-edit: Dockerfile
 	docker run -it --rm  \
 	-e POSTGRES_HOST_AUTH_METHOD=trust \
