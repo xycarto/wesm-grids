@@ -1,5 +1,13 @@
 # wesm-grids
 
+**IN DEVELOPMENT**
+
+## TODO
+
+1. mutli-core process
+1. launch EC2
+1. list for processing
+
 ## WESM location
 
 ```
