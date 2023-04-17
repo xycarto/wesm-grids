@@ -10,17 +10,19 @@ import json
 from shapely.geometry import Polygon
 import pyproj
 
-# python3 utils/build-index.py ./tmp/vectorData/WESM.gpkg
+# python3 utils/build-index.py "CA_SantaClaraCounty_2020"
 
 
 # Set AWS credentials
 def main():    
     s3 = get_creds()
+    
+    print("Reading WESM...")
     gp_wesm = gp.read_file(WESM)
-    # filtered = gp_wesm[gp_wesm.workunit == "CA_SantaClaraCounty_2020"]
+    filtered = gp_wesm[gp_wesm.workunit == WORKUNIT]
     # filtered.to_file(f"{DATA_DIR}/filter-testing.gpkg", driver="GPKG")
     
-    for index, row in gp_wesm.iterrows():
+    for index, row in filtered.iterrows():
         workunit = row.workunit
         horiz_crs = row.horiz_crs
         vert_crs = row.vert_crs
@@ -30,10 +32,10 @@ def main():
         df = []
         parse_pages(df, s3, pages, horiz_crs, workunit, lpc_prefix, vert_crs)
         
-    print("Creating GPKG in native projection")
+    print("Creating GPKG...")
     gpkgName = lpc_prefix.split("/")[-2]
-    gpkg_native = os.path.join(DATA_DIR, (gpkgName + "_index_" + str(horiz_crs) + ".gpkg"))
-    gpkg_wgs = os.path.join(DATA_DIR, (gpkgName + "_index_" + str(4326) + ".gpkg"))
+    gpkg_native = os.path.join(INDEX_DIR, (gpkgName + "_index_" + str(horiz_crs) + ".gpkg"))
+    gpkg_wgs = os.path.join(INDEX_DIR, (gpkgName + "_index_" + str(4326) + ".gpkg"))
     gfd = gp.GeoDataFrame(df, crs=native_crs)
     gfd.to_crs(native_crs).to_file(gpkg_native, driver="GPKG")
     gfd.to_crs("EPSG:4326").to_file(gpkg_wgs, driver="GPKG")
@@ -46,11 +48,9 @@ def parse_pages(df, s3, pages, horiz_crs, workunit, lpc_prefix, vert_crs):
             print(usgs_loc)
             laz_json, laz_name = get_laz_meta(s3, usgs_loc)           
             poly = bbox(laz_json)  
-            write_df(df, horiz_crs, laz_name, workunit, lpc_prefix, usgs_loc, vert_crs, poly) 
-                
+            write_df(df, horiz_crs, laz_name, workunit, lpc_prefix, usgs_loc, vert_crs, laz_json, poly)                 
         
-def write_df(df, horiz_crs, laz_name, workunit, lpc_prefix, usgs_loc, vert_crs, poly):
-    # Write to geoDataFrame
+def write_df(df, horiz_crs, laz_name, workunit, lpc_prefix, usgs_loc, vert_crs, laz_json, poly):
     df.append(
         {
             'file_name':laz_name,
@@ -59,6 +59,7 @@ def write_df(df, horiz_crs, laz_name, workunit, lpc_prefix, usgs_loc, vert_crs, 
             'usgs_loc':usgs_loc,
             'native_horiz_crs':horiz_crs,
             'native_vert_crs':vert_crs,
+            'json_data': laz_json,
             'geometry': poly
         }
     )
@@ -66,7 +67,7 @@ def write_df(df, horiz_crs, laz_name, workunit, lpc_prefix, usgs_loc, vert_crs, 
 
 def get_laz_meta(s3, usgs_loc):
     laz_name = os.path.basename(usgs_loc)
-    part_laz_file=os.path.join(DATA_DIR, laz_name)
+    part_laz_file=os.path.join(PART_DIR, laz_name)
     part_laz = s3.get_object(Bucket=USGS_BUCKET, Key=usgs_loc, RequestPayer="requester", Range="bytes=0-10000")
     body = part_laz["Body"].read()
     with open(part_laz_file, "wb") as f:
@@ -121,13 +122,16 @@ def get_creds():
     return s3
 
 if __name__ == "__main__":
-    USGS_BUCKET="usgs-lidar"
-
-    # make dirs for downloads
-    DATA_DIR = "data"
-    os.makedirs(DATA_DIR, exist_ok=True)
     
-    WESM = "data/filter-testing.gpkg"
+    USGS_BUCKET="usgs-lidar"
+    WORKUNIT = sys.argv[1]
+    DATA_DIR = "data"
+    INDEX_DIR = os.path.join(DATA_DIR, "index-indv")
+    PART_DIR = os.path.join(DATA_DIR, "partial-files")
+    os.makedirs(INDEX_DIR, exist_ok=True)
+    os.makedirs(PART_DIR, exist_ok=True)
+    
+    WESM = "data/WESM.gpkg"
 
     main()
     

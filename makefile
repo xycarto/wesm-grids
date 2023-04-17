@@ -13,7 +13,7 @@ RUN ?= docker run -it --rm  \
 # Make tiler docker
 
 wesm-index:
-	$(RUN) python3 utils/build-index.py
+	$(RUN) python3 utils/build-index.py "CA_SantaClaraCounty_2020"
 
 local-edit: Dockerfile
 	docker run -it --rm  \
