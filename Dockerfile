@@ -15,14 +15,14 @@ RUN apt-get update &&  \
 
 # Install pip3 and compilation tools
 RUN apt-get update && \
-		apt-get install -y python3-pip cmake++ ninja-build && \
+	apt-get install -y python3-pip cmake++ ninja-build && \
     apt upgrade --yes && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN pip3 install Ninja
 
 # Install GDAL
 RUN apt-get update && \
-		apt-get install -y gdal-bin libgdal-dev && \
+	apt-get install -y gdal-bin libgdal-dev && \
     apt upgrade --yes && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

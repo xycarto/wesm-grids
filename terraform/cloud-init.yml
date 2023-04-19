@@ -1,0 +1,12 @@
+#cloud-config
+locale: en_NZ.UTF-8
+timezone: Pacific/Auckland
+package_upgrade: true
+
+packages:
+  - awscli
+  - docker.io
+  - make
+
+runcmd:
+  - [ pip3, install, awscli, --upgrade ]

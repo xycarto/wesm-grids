@@ -59,7 +59,7 @@ def write_df(df, horiz_crs, laz_name, workunit, lpc_prefix, usgs_loc, vert_crs, 
             'usgs_loc':usgs_loc,
             'native_horiz_crs':horiz_crs,
             'native_vert_crs':vert_crs,
-            'json_data': laz_json,
+            'json_data': str(laz_json),
             'geometry': poly
         }
     )

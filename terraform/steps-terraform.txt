@@ -1,0 +1,11 @@
+make local-test
+
+cd tf-aws-test
+
+terraform init
+
+terrafrom apply
+
+yes
+
+terraform show
