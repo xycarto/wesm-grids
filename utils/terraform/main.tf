@@ -19,7 +19,7 @@ data "template_file" "user_data" {
 
 resource "aws_instance" "app_server" {
   ami                     = "ami-0fcf52bcf5db7b003"
-  instance_type           = "t2.micro"
+  instance_type           = "t2.medium"
   user_data               = data.template_file.user_data.rendered
   security_groups         = ["wesm"]
   key_name                = var.key_name
