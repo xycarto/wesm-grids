@@ -1,10 +1,11 @@
-
-
 # testing data
 data/*
+utils/src/data
 qgis/*
 *.lock
 *.h5
+*.pub
+*.pem
 
 # VSCode
 .vscode/*
@@ -23,3 +24,10 @@ qgis/*
 # hide secrets
 .creds
 .config
+.ssh
+
+# terraform
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.lock.hcl

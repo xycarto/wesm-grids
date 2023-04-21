@@ -18,3 +18,15 @@ RUN apt update && apt-get install --no-install-recommends -y terraform
 
 RUN apt-get update && apt-get --no-install-recommends -y install python3-pip
 RUN pip3 install awscli
+
+RUN apt-get update && apt-get --no-install-recommends -y install openssh-server
+
+RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 test 
+
+RUN  echo 'test:test' | chpasswd
+
+RUN service ssh start
+
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd","-D"]

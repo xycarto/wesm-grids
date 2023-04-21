@@ -12,10 +12,13 @@ import pyproj
 
 # python3 utils/build-index.py "CA_SantaClaraCounty_2020"
 
-
 # Set AWS credentials
 def main():    
     s3 = get_creds()
+    
+    # Download WESM
+    if not os.path.exists(WESM):
+        s3.download_file(WESM_BUCKET, WESM, WESM, ExtraArgs={'RequestPayer':'requester'})
     
     print("Reading WESM...")
     gp_wesm = gp.read_file(WESM)
@@ -39,6 +42,10 @@ def main():
     gfd = gp.GeoDataFrame(df, crs=native_crs)
     gfd.to_crs(native_crs).to_file(gpkg_native, driver="GPKG")
     gfd.to_crs("EPSG:4326").to_file(gpkg_wgs, driver="GPKG")
+    
+    print(f"Uploading... {gpkg_native}")   
+    s3.upload_file(gpkg_native, WESM_BUCKET, gpkg_native)    
+    s3.upload_file(gpkg_wgs, WESM_BUCKET, gpkg_wgs)
     
  
 def parse_pages(df, s3, pages, horiz_crs, workunit, lpc_prefix, vert_crs):
@@ -124,14 +131,15 @@ def get_creds():
 if __name__ == "__main__":
     
     USGS_BUCKET="usgs-lidar"
+    WESM_BUCKET="wesm"
     WORKUNIT = sys.argv[1]
     DATA_DIR = "data"
     INDEX_DIR = os.path.join(DATA_DIR, "index-indv")
     PART_DIR = os.path.join(DATA_DIR, "partial-files")
+    WESM = "data/WESM.gpkg"
+    
     os.makedirs(INDEX_DIR, exist_ok=True)
     os.makedirs(PART_DIR, exist_ok=True)
     
-    WESM = "data/WESM.gpkg"
-
     main()
     

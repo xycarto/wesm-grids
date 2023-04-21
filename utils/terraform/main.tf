@@ -10,18 +10,22 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "us-west-2"
+}
+
+data "template_file" "user_data" {
+  template = file("../cloud-init.yml")
 }
 
 resource "aws_instance" "app_server" {
-  ami                     = "ami-007855ac798b5175e"
+  ami                     = "ami-0fcf52bcf5db7b003"
   instance_type           = "t2.micro"
-  user_data               = "${file("../cloud-init.yml")}"
-  instance_initiated_shutdown_behavior = "terminate"
+  user_data               = data.template_file.user_data.rendered
+  security_groups         = ["wesm"]
   key_name                = var.key_name
+  vpc_security_group_ids  = ["sg-0d478e38195ba3d1d"]
 
   tags = {
     Name = var.instance_name
   }
 }
-
