@@ -4,9 +4,9 @@
 
 ## TODO
 
-1. mutli-core process
-1. launch EC2
-1. list for processing
+1. Process to K8s
+1. Full run on single workunit
+1. Test run on two workunit
 
 ## WESM location
 
