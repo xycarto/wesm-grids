@@ -2,7 +2,7 @@
 
 # bash run-index.sh "CA_SantaClaraCounty_2020"
 
-source .creds
+source ../.creds
 
 WORKUNIT=$1
 
