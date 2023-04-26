@@ -23,9 +23,9 @@ cat lists/test-list.txt | xargs -P 2 -t -I % make build workunit=%
 
 ## Required
 
-Docker
-Terraform
-AWS credentials
+- Docker
+- Terraform
+- AWS credentials
 
 ## WESM location
 
