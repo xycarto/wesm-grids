@@ -27,4 +27,6 @@ ssh -o StrictHostKeyChecking=no -i ${key}  ubuntu@$(terraform output -raw instan
 
 terraform destroy -auto-approve
 
+cd ../
+
 rm -rf terraform-${WORKUNIT}
