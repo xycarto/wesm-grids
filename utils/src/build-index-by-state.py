@@ -11,7 +11,7 @@ from shapely.geometry import Polygon
 import pyproj
 import shutil
 
-# python3 build-index-by-state.py "CA_SantaClaraCounty_2020" California
+# python3 build-index-by-state.py "CA_SoCal_Wildfires_B2_2018" California
 
 # Set AWS credentials
 def main():    
