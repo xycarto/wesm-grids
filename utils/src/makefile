@@ -1,4 +1,4 @@
-include .creds
+include ../.creds
 
 DOCKER_PW := ${DOCKER_PW}
 
@@ -8,7 +8,7 @@ IMAGE := $(BASEIMAGE):2023-04-21
 RUN ?= docker run --rm  \
 	-e POSTGRES_HOST_AUTH_METHOD=trust \
 	-e DISPLAY=$$DISPLAY \
-	--env-file .creds \
+	--env-file ../.creds \
 	-e RUN= -v$$(pwd):/work \
 	-w /work $(IMAGE)
 
@@ -21,7 +21,7 @@ local-edit: Dockerfile
 	docker run -it --rm  \
 	-e POSTGRES_HOST_AUTH_METHOD=trust \
 	-e DISPLAY=$$DISPLAY \
-	--env-file .creds \
+	--env-file ../.creds \
 	-e RUN= -v$$(pwd):/work \
 	-w /work $(IMAGE)
 	bash

@@ -2,13 +2,13 @@
 
 # bash run-index.sh "CA_SantaClaraCounty_2020"
 
-source ../.creds
+source .creds
 
 WORKUNIT=$1
 
 git clone https://${TOKEN}@github.com/xycarto/wesm-grids.git
 
-cp -r .creds wesm-grids/utils/src/
+cp -r .creds wesm-grids/utils/
 
 cd wesm-grids/utils/src
 
