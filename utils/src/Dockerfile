@@ -32,12 +32,15 @@ RUN cd /LASzip && mkdir build && cd build && cmake -G Ninja ../ && ninja && ninj
 
 # Compile PDAL
 RUN cd / && git clone --depth 1 https://github.com/pdal/pdal.git
-RUN cd /pdal && mkdir build && cd build && cmake -G Ninja .. && sed -i 's/CMAKE_BUILD_TYPE:STRING=/CMAKE_BUILD_TYPE:STRING=Release/' ./CMakeCache.txt && echo 'WITH_LASZIP:BOOL=ON' >> ./CMakeCache.txt && ninja && ninja install && cd /
+RUN cd /pdal && mkdir build && cd build && cmake -G Ninja .. && \
+    sed -i 's/CMAKE_BUILD_TYPE:STRING=/CMAKE_BUILD_TYPE:STRING=Release/' \
+    ./CMakeCache.txt && echo 'WITH_LASZIP:BOOL=ON' >> ./CMakeCache.txt && ninja && ninja install && cd /
 
 # Install Python packages
 RUN pip3 install boto3 geopandas rasterio pyproj
 
 RUN apt-get update && \
     apt-get install -y awscli
+    
 RUN pip3 install awscli --upgrade
 
