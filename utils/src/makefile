@@ -15,7 +15,7 @@ RUN ?= docker run --rm  \
 # Make tiler docker
 
 wesm-index:
-	$(RUN) python3 build-index.py $(workunit)
+	$(RUN) python3 build-index.py $(workunit) $(state)
 
 local-edit: Dockerfile
 	docker run -it --rm  \

@@ -9,8 +9,9 @@ import subprocess as sub
 import json
 from shapely.geometry import Polygon
 import pyproj
+import shutil
 
-# python3 utils/build-index.py "CA_SantaClaraCounty_2020" California
+# python3 build-index-by-state.py "CA_SantaClaraCounty_2020" California
 
 # Set AWS credentials
 def main():    
@@ -24,6 +25,7 @@ def main():
     gp_wesm = gp.read_file(WESM)
     filtered = gp_wesm[gp_wesm.workunit == WORKUNIT]
     # filtered.to_file(f"{DATA_DIR}/filter-testing.gpkg", driver="GPKG")
+    base_crs = filtered.crs
     
     for index, row in filtered.iterrows():
         workunit = row.workunit
@@ -37,17 +39,18 @@ def main():
         
     print("Creating GPKG...")
     gpkgName = lpc_prefix.split("/")[-2]
-    gpkg_native = os.path.join(INDEX_DIR, (gpkgName + "_index_" + str(horiz_crs) + ".gpkg"))
-    gpkg_wgs = os.path.join(INDEX_DIR, (gpkgName + "_index_" + str(4326) + ".gpkg"))
+    gpkg_native = os.path.join(INDEX_DIR, f"{gpkgName}_index_{str(horiz_crs)}.gpkg")
+    gpkg_wgs = os.path.join(INDEX_DIR, f"{gpkgName}_index_{str(base_crs).split(':')[-1]}.gpkg")
     gfd = gp.GeoDataFrame(df, crs=native_crs)
     gfd.to_crs(native_crs).to_file(gpkg_native, driver="GPKG")
     gfd.to_crs("EPSG:4326").to_file(gpkg_wgs, driver="GPKG")
     
-    print(f"Uploading... {gpkg_native}")   
-    s3.upload_file(gpkg_native, WESM_BUCKET, gpkg_native)    
-    s3.upload_file(gpkg_wgs, WESM_BUCKET, gpkg_wgs)
+    # print(f"Uploading... {gpkg_native}")   
+    # s3.upload_file(gpkg_native, WESM_BUCKET, gpkg_native)    
+    # s3.upload_file(gpkg_wgs, WESM_BUCKET, gpkg_wgs)
     
- 
+    shutil.rmtree(PART_DIR)
+    
 def parse_pages(df, s3, pages, horiz_crs, workunit, lpc_prefix, vert_crs):
     for page in pages:
         for obj in page['Contents']:
@@ -70,7 +73,6 @@ def write_df(df, horiz_crs, laz_name, workunit, lpc_prefix, usgs_loc, vert_crs, 
             'geometry': poly
         }
     )
-
 
 def get_laz_meta(s3, usgs_loc):
     laz_name = os.path.basename(usgs_loc)
@@ -135,8 +137,8 @@ if __name__ == "__main__":
     WORKUNIT = sys.argv[1]
     STATE = sys.argv[2]
     DATA_DIR = "data"
-    INDEX_DIR = os.path.join(DATA_DIR, "index-indv")
-    PART_DIR = os.path.join(DATA_DIR, "partial-files")
+    INDEX_DIR = os.path.join(DATA_DIR, "index-indv", STATE)
+    PART_DIR = os.path.join(DATA_DIR, "partial-files", STATE)
     WESM = os.path.join("data","wesm-by-state", f"{STATE}.gpkg")
     
     os.makedirs(INDEX_DIR, exist_ok=True)

@@ -1,9 +1,10 @@
 #!/bin/bash
 
 ## Example for single run
-# bash build-infra.sh "CA_SantaClaraCounty_2020"
+# bash build-infra.sh "CA_SantaClaraCounty_2020" "California"
 
 WORKUNIT=$1
+STATE=$2
 
 source .creds
 
@@ -24,7 +25,7 @@ scp -o StrictHostKeyChecking=no -i ${key} -r ../.creds ubuntu@$(terraform output
 
 scp -o StrictHostKeyChecking=no -i ${key}  -r ../run-index.sh ubuntu@$(terraform output -raw instance_public_ip):/home/ubuntu/
 
-ssh -o StrictHostKeyChecking=no -i ${key}  ubuntu@$(terraform output -raw instance_public_ip) "bash run-index.sh $WORKUNIT"
+ssh -o StrictHostKeyChecking=no -i ${key}  ubuntu@$(terraform output -raw instance_public_ip) "bash run-index.sh $WORKUNIT $STATE"
 
 terraform destroy -auto-approve
 
