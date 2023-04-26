@@ -1,5 +1,6 @@
 #!/bin/bash
 
+## Example for single run
 # bash build-infra.sh "CA_SantaClaraCounty_2020"
 
 WORKUNIT=$1
