@@ -6,7 +6,9 @@ WORKUNIT=$1
 
 source .creds
 
-cd terraform
+cp -r terraform terraform-${WORKUNIT}
+
+cd terraform-${WORKUNIT}
 
 terraform init 
 
@@ -24,3 +26,5 @@ scp -o StrictHostKeyChecking=no -i ${key}  -r ../run-index.sh ubuntu@$(terraform
 ssh -o StrictHostKeyChecking=no -i ${key}  ubuntu@$(terraform output -raw instance_public_ip) "bash run-index.sh $WORKUNIT"
 
 terraform destroy -auto-approve
+
+rm -rf terraform-${WORKUNIT}

@@ -3,10 +3,7 @@
 BASEIMAGE := xycarto/terraform
 IMAGE := $(BASEIMAGE):2023-04-19
 
-profile := xycarto-admin
-region := us-west-2
-
-RUN ?= docker run -it --rm --net=host --privileged --user=$$(id -u):$$(id -g) \
+RUN ?= docker run --rm --net=host --privileged --user=$$(id -u):$$(id -g) \
 	-e DISPLAY=$$DISPLAY \
 	--env-file .creds \
 	-e RUN= -v$$(pwd):/work \
