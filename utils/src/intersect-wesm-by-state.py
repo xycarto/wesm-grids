@@ -24,6 +24,10 @@ def main():
     wesm = gp.read_file(WESM)
     states = gp.read_file(STATES)
     
+    print("Cleaning input files...")
+    wesm['geometry'] = wesm.geometry.buffer(0)
+    states['geometry'] = states.geometry.buffer(0)
+    
     for i, st in states.iterrows():        
         state_gpkg = os.path.join(STATES_DIR, f"{st['NAME']}.gpkg")
         print(f"Making state intersect {state_gpkg}")
