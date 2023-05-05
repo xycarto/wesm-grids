@@ -23,7 +23,6 @@ def main():
     print("Reading WESM...")
     gp_wesm = gp.read_file(WESM)
     filtered = gp_wesm[gp_wesm.workunit == WORKUNIT]
-    # filtered.to_file(f"{DATA_DIR}/filter-testing.gpkg", driver="GPKG")
     
     for index, row in filtered.iterrows():
         workunit = row.workunit
