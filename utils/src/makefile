@@ -5,17 +5,19 @@ DOCKER_PW := ${DOCKER_PW}
 BASEIMAGE := xycarto/wesm-grids
 IMAGE := $(BASEIMAGE):2023-04-21
 
-RUN ?= docker run --rm  \
+RUN ?= docker run -it --rm  \
 	-e POSTGRES_HOST_AUTH_METHOD=trust \
 	-e DISPLAY=$$DISPLAY \
 	--env-file ../.creds \
 	-e RUN= -v$$(pwd):/work \
 	-w /work $(IMAGE)
 
-# Make tiler docker
+state-intersect:
+	$(RUN) python3 intersect-wesm-by-state.py 
 
+# make wesm-index workunit=CA_SoCal_Wildfires_B2_2018 state=California
 wesm-index:
-	$(RUN) python3 build-index.py $(workunit) $(state)
+	$(RUN) python3 build-index-by-state.py $(workunit) $(state)
 
 local-edit: Dockerfile
 	docker run -it --rm  \

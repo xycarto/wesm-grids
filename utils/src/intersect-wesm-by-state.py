@@ -10,26 +10,24 @@ import json
 from shapely.geometry import Polygon
 import pyproj
 
-# python3 parse-wesm-by-state.py 
+# python3 intersect-wesm-by-state.py 
 
 # Set AWS credentials
 def main():    
     s3 = get_creds()
     
-    # Download WESM gpkg
-    if not os.path.exists(WESM):
-        s3.download_file(WESM_BUCKET, WESM, WESM, ExtraArgs={'RequestPayer':'requester'})
-        
-    # Download States gpkg
-    if not os.path.exists(WESM):
-        s3.download_file(WESM_BUCKET, STATES, STATES, ExtraArgs={'RequestPayer':'requester'})
-        
+    print("Downloading files needed...")
+    for fl in [WESM, STATES]:
+        download(s3, fl)
+       
+    print("Loading in Geopandas...")    
     wesm = gp.read_file(WESM)
     states = gp.read_file(STATES)
     
-    for i, st in states.iterrows():
-        state = states[states['NAME'] == st['NAME']]
+    for i, st in states.iterrows():        
         state_gpkg = os.path.join(STATES_DIR, f"{st['NAME']}.gpkg")
+        print(f"Making state intersect {state_gpkg}")
+        state = states[states['NAME'] == st['NAME']]
         selection = get_intersect(state, wesm)
         
         selection.to_file(state_gpkg, driver="GPKG")
@@ -42,7 +40,11 @@ def get_intersect(state, wesm):
     mask = wesm.intersects(state_geom)
     selection = wesm.loc[mask]
     
-    return selection 
+    return selection
+ 
+def download(s3, fl):
+    if not os.path.exists(fl):      
+        s3.download_file(WESM_BUCKET, fl, fl, ExtraArgs={'RequestPayer':'requester'})
     
 def get_creds():
     s3 = boto3.client(
@@ -57,8 +59,8 @@ def get_creds():
 if __name__ == "__main__":
     
     WESM_BUCKET="wesm"
-    DATA_DIR = "data"
-    STATES_DIR = os.path.join(DATA_DIR, "wesm-by-state")
+    DATA= "data"
+    STATES_DIR = os.path.join(DATA, "wesm-by-state")
     WESM = "data/WESM.gpkg"
     STATES = "data/us-states.gpkg"
     
