@@ -50,6 +50,8 @@ https://www.sciencebase.gov/catalog/item/52c78623e4b060b9ebca5be5
 https://registry.opendata.aws/usgs-lidar/
 ```
 
+UnZip and place at `data/us-states.gpkg`
+
 ## Basic Method
 
 Clean broken geometries, remove slivers, fill interior rings
