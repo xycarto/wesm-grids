@@ -20,6 +20,7 @@ cat lists/test-list.txt | xargs -P 2 -t -I % make build workunit=%
 1. The current method is too slow for launching the EC2.  Time is taken up in pulling the needed Docker. Ideally, replaction of the server would suffice.
 1. The full WESM file is a very slow read for the process.  A method to reduce the file size of the WESM and target on a state by state region is being explored   
 1. Better handling of credentials
+1. Make better connection between state and workunit
 
 ## Required
 
@@ -39,3 +40,15 @@ curl https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/metadata/WESM
 https://registry.opendata.aws/usgs-lidar/
 ```
 
+## Basic Method
+
+
+Method to intersect WESM with individual states
+```
+make state-intersect
+```
+
+Method to index workunit by state
+```
+make wesm-index workunit=CA_SoCal_Wildfires_B2_2018 state=California
+```
