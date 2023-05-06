@@ -10,34 +10,71 @@ import json
 from shapely.geometry import Polygon
 import pyproj
 
-# python3 intersect-wesm-by-state.py 
+# python3 clean-wesm.py 
 
 # Set AWS credentials
 def main():    
     s3 = get_creds()
     
     print("Downloading files needed...")
-    for fl in [WESM, STATES]:
+    for fl in [WESM]:
         download(s3, fl)
        
     print("Loading in Geopandas...")    
-    wesm = gp.read_file(WESM).explode(index_parts=True)
-    states = gp.read_file(STATES)
+    wesm = gp.read_file(WESM).explode(index_parts=True).to_crs(26914)
+    wesm_crs = wesm.crs
     
-    print("Cleaning input files...")
+    print("Cleaning WESM...")
+    # wesm_proj = wesm.to_crs(26914)
+    # wesm_proj['geometry'] = wesm_proj['geometry'].exterior
+    # wesm_proj['area'] = wesm_proj['geometry'].area
+    
     # wesm['geometry'] = wesm.geometry.buffer(0)
     # wesm_clean = [row['geometry'] = row.geometry.buffer(0) for i, row in wesm.iterrows()]
+    df = []
     for ind, row in wesm.iterrows():
-        if row.workunit == "CO_UpperColorado_Hydroflattened_2020" or row.workunit == "FL_WestEvergladesNP_topobathymetric_2018" or AZ_MaricopaPinal_1_2020:
-            # new_row = row[row['geometry'] == row.geometry.buffer(0)]
-            # print(new_row)
+        # new_row = row[row['geometry'] == row.geometry.buffer(0)]
+        # print(new_row)
 
-            # print(row.geometry)
-            # row['geometry'] = row.geometry.buffer(0)
-            pass
-        else:
+        # print(row.geometry)
+        # row['geometry'] = row.geometry.buffer(0)
+        # row_reproj = row.to_crs(26914)
+        # print("getting exterior...")
+        row['geometry'] = row['geometry'].exterior
+        row['geometry'] = Polygon(row['geometry'].coords)
+        # geom = close_geometry(row['geometry'])
+        # print(type(geom))
+        
+        print("making area...")
+        row['area'] = row['geometry'].area  
+        
+        if row['area'] > 5000:
+            print(row['workunit'])
             row['geometry'] = row.geometry.buffer(0)
-            print(row)
+            df.append(row)
+            
+    gfd = gp.GeoDataFrame(df, crs="epsg:26914").dissolve(by='workunit')
+    gfd.to_file("data/test-clean.gpkg", driver="GPKG")
+            
+        
+            
+# def close_geometry(geometry):
+#     # if geometry.empty or geometry[0].empty:
+#     #    return geometry # empty
+
+#     # if(geometry[-1][-1] == geometry[0][0]):
+#     #     return geometry  # already closed
+
+#     result = None
+#     for linestring in geometry:
+#         if result is None:
+#           resultstring = linestring.clone()
+#         else:
+#           resultstring.extend(linestring.coords)
+
+#     geom = Polygon(resultstring)
+
+#     return geom        
     # print(wesm_clean)
     # print(type(wesm_clean))
         
@@ -79,10 +116,8 @@ if __name__ == "__main__":
     
     WESM_BUCKET="wesm"
     DATA= "data"
-    STATES_DIR = os.path.join(DATA, "wesm-by-state")
     WESM = "data/WESM.gpkg"
-    STATES = "data/us-states.gpkg"
     
-    os.makedirs(STATES_DIR, exist_ok=True)
+    os.makedirs(DATA, exist_ok=True)
     
     main()
