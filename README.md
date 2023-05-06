@@ -32,6 +32,7 @@ Tested and working. Improvements
 - Docker
 - Terraform
 - AWS credentials
+- WESM and States downloaded
 
 ## WESM location
 
