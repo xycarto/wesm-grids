@@ -40,7 +40,11 @@ Tested and working. Improvements
 curl https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/metadata/WESM.gpkg --output data/WESM.gpkg
 ```
 
-## USGS Data
+## US States file location
+
+https://www.sciencebase.gov/catalog/item/52c78623e4b060b9ebca5be5
+
+## USGS Point Cloud Data
 
 ```
 https://registry.opendata.aws/usgs-lidar/
