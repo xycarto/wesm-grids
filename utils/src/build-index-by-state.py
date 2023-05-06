@@ -42,7 +42,7 @@ def main():
     gpkg_wgs = os.path.join(INDEX_DIR, f"{gpkgName}_index_{str(base_crs).split(':')[-1]}.gpkg")
     gfd = gp.GeoDataFrame(df, crs=native_crs)
     gfd.to_crs(native_crs).to_file(gpkg_native, driver="GPKG")
-    gfd.to_crs("EPSG:4326").to_file(gpkg_wgs, driver="GPKG")
+    gfd.to_crs(base_crs).to_file(gpkg_wgs, driver="GPKG")
     
     # print(f"Uploading... {gpkg_native}")   
     # s3.upload_file(gpkg_native, WESM_BUCKET, gpkg_native)    

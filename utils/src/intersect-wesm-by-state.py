@@ -32,7 +32,7 @@ def main():
         state = states[states['NAME'] == st['NAME']]
         selection = get_intersect(state, wesm)
         
-        selection.to_file(state_gpkg, driver="GPKG")
+        selection.to_crs(WESM_CRS).to_file(state_gpkg, driver="GPKG")
         
     #     print(f"Uploading... {state_gpkg}")   
     #     s3.upload_file(state_gpkg, WESM_BUCKET, state_gpkg)   
@@ -65,6 +65,7 @@ if __name__ == "__main__":
     STATES_DIR = os.path.join(DATA, "wesm-by-state")
     WESM = "data/WESM-clean.gpkg"
     STATES = "data/us-states.gpkg"
+    WESM_CRS = "4269"
     
     os.makedirs(STATES_DIR, exist_ok=True)
     
