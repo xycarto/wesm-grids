@@ -20,6 +20,7 @@ cat lists/test-list.txt | xargs -P 2 -t -I % make build workunit=%
 Tested and working. Improvements
 
 1. Linking between scripts
+1. Error coding. Not all `workunits` will pass on `make wesm-index`.
 1. Less verbose scripts
 1. Passing source crs through project
 1. The current method is too slow for launching the EC2.  Time is taken up in pulling the needed Docker. Ideally, replaction of the server would suffice.  
