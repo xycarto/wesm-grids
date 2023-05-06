@@ -17,8 +17,12 @@ cat lists/test-list.txt | xargs -P 2 -t -I % make build workunit=%
 
 ## TODO
 
-1. The current method is too slow for launching the EC2.  Time is taken up in pulling the needed Docker. Ideally, replaction of the server would suffice.
-1. The full WESM file is a very slow read for the process.  A method to reduce the file size of the WESM and target on a state by state region is being explored   
+Tested and working. Improvements
+
+1. Linking between scripts
+1. Less verbose scripts
+1. Passing source crs through project
+1. The current method is too slow for launching the EC2.  Time is taken up in pulling the needed Docker. Ideally, replaction of the server would suffice.  
 1. Better handling of credentials
 1. Make better connection between state and workunit
 
