@@ -21,35 +21,18 @@ def main():
         download(s3, fl)
        
     print("Loading in Geopandas...")    
-    wesm = gp.read_file(WESM).explode(index_parts=True)
-    states = gp.read_file(STATES)
+    wesm = gp.read_file(WESM).to_crs(26914)
+    states = gp.read_file(STATES).to_crs(26914)   
+     
+    states['geometry'] = states.geometry.buffer(0)
     
-    print("Cleaning input files...")
-    # wesm['geometry'] = wesm.geometry.buffer(0)
-    # wesm_clean = [row['geometry'] = row.geometry.buffer(0) for i, row in wesm.iterrows()]
-    for ind, row in wesm.iterrows():
-        if row.workunit == "CO_UpperColorado_Hydroflattened_2020" or row.workunit == "FL_WestEvergladesNP_topobathymetric_2018" or AZ_MaricopaPinal_1_2020:
-            # new_row = row[row['geometry'] == row.geometry.buffer(0)]
-            # print(new_row)
-
-            # print(row.geometry)
-            # row['geometry'] = row.geometry.buffer(0)
-            pass
-        else:
-            row['geometry'] = row.geometry.buffer(0)
-            print(row)
-    # print(wesm_clean)
-    # print(type(wesm_clean))
+    for i, st in states.iterrows():        
+        state_gpkg = os.path.join(STATES_DIR, f"{st['NAME']}.gpkg")
+        print(f"Making state intersect {state_gpkg}")
+        state = states[states['NAME'] == st['NAME']]
+        selection = get_intersect(state, wesm)
         
-    # states['geometry'] = states.geometry.buffer(0)
-    
-    # for i, st in states.iterrows():        
-    #     state_gpkg = os.path.join(STATES_DIR, f"{st['NAME']}.gpkg")
-    #     print(f"Making state intersect {state_gpkg}")
-    #     state = states[states['NAME'] == st['NAME']]
-    #     selection = get_intersect(state, wesm)
-        
-    #     selection.to_file(state_gpkg, driver="GPKG")
+        selection.to_file(state_gpkg, driver="GPKG")
         
     #     print(f"Uploading... {state_gpkg}")   
     #     s3.upload_file(state_gpkg, WESM_BUCKET, state_gpkg)   
@@ -80,7 +63,7 @@ if __name__ == "__main__":
     WESM_BUCKET="wesm"
     DATA= "data"
     STATES_DIR = os.path.join(DATA, "wesm-by-state")
-    WESM = "data/WESM.gpkg"
+    WESM = "data/WESM-clean.gpkg"
     STATES = "data/us-states.gpkg"
     
     os.makedirs(STATES_DIR, exist_ok=True)

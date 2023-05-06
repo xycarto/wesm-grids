@@ -42,6 +42,10 @@ https://registry.opendata.aws/usgs-lidar/
 
 ## Basic Method
 
+Clean broken geometries, remove slivers, fill interior rings
+```
+make clean-wesm
+```
 
 Method to intersect WESM with individual states
 ```

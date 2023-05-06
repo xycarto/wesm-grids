@@ -12,6 +12,9 @@ RUN ?= docker run -it --rm  \
 	-e RUN= -v$$(pwd):/work \
 	-w /work $(IMAGE)
 
+clean-wesm:
+	$(RUN) python3 clean-wesm.py
+
 state-intersect:
 	$(RUN) python3 intersect-wesm-by-state.py 
 

@@ -25,25 +25,10 @@ def main():
     wesm_crs = wesm.crs
     
     print("Cleaning WESM...")
-    # wesm_proj = wesm.to_crs(26914)
-    # wesm_proj['geometry'] = wesm_proj['geometry'].exterior
-    # wesm_proj['area'] = wesm_proj['geometry'].area
-    
-    # wesm['geometry'] = wesm.geometry.buffer(0)
-    # wesm_clean = [row['geometry'] = row.geometry.buffer(0) for i, row in wesm.iterrows()]
     df = []
     for ind, row in wesm.iterrows():
-        # new_row = row[row['geometry'] == row.geometry.buffer(0)]
-        # print(new_row)
-
-        # print(row.geometry)
-        # row['geometry'] = row.geometry.buffer(0)
-        # row_reproj = row.to_crs(26914)
-        # print("getting exterior...")
         row['geometry'] = row['geometry'].exterior
         row['geometry'] = Polygon(row['geometry'].coords)
-        # geom = close_geometry(row['geometry'])
-        # print(type(geom))
         
         print("making area...")
         row['area'] = row['geometry'].area  
@@ -55,49 +40,9 @@ def main():
             
     gfd = gp.GeoDataFrame(df, crs="epsg:26914").dissolve(by='workunit')
     gfd.to_file("data/test-clean.gpkg", driver="GPKG")
+    gfd.to_crs(wesm_crs).to_file("data/WESM-clean.gpkg", driver="GPKG")
             
-        
-            
-# def close_geometry(geometry):
-#     # if geometry.empty or geometry[0].empty:
-#     #    return geometry # empty
 
-#     # if(geometry[-1][-1] == geometry[0][0]):
-#     #     return geometry  # already closed
-
-#     result = None
-#     for linestring in geometry:
-#         if result is None:
-#           resultstring = linestring.clone()
-#         else:
-#           resultstring.extend(linestring.coords)
-
-#     geom = Polygon(resultstring)
-
-#     return geom        
-    # print(wesm_clean)
-    # print(type(wesm_clean))
-        
-    # states['geometry'] = states.geometry.buffer(0)
-    
-    # for i, st in states.iterrows():        
-    #     state_gpkg = os.path.join(STATES_DIR, f"{st['NAME']}.gpkg")
-    #     print(f"Making state intersect {state_gpkg}")
-    #     state = states[states['NAME'] == st['NAME']]
-    #     selection = get_intersect(state, wesm)
-        
-    #     selection.to_file(state_gpkg, driver="GPKG")
-        
-    #     print(f"Uploading... {state_gpkg}")   
-    #     s3.upload_file(state_gpkg, WESM_BUCKET, state_gpkg)   
-    
-def get_intersect(state, wesm):
-    state_geom = state.geometry.values[0]
-    mask = wesm.intersects(state_geom)
-    selection = wesm.loc[mask]
-    
-    return selection
- 
 def download(s3, fl):
     if not os.path.exists(fl):      
         s3.download_file(WESM_BUCKET, fl, fl, ExtraArgs={'RequestPayer':'requester'})
