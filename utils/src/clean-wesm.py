@@ -21,12 +21,13 @@ def main():
         download(s3, fl)
        
     print("Loading in Geopandas...")    
-    wesm = gp.read_file(WESM).explode(index_parts=True).to_crs(26914)
+    wesm = gp.read_file(WESM).explode(index_parts=True)
+    wesm_proj = wesm.to_crs(26914)
     wesm_crs = wesm.crs
     
     print("Cleaning WESM...")
     df = []
-    for ind, row in wesm.iterrows():
+    for ind, row in wesm_proj.iterrows():
         row['geometry'] = row['geometry'].exterior
         row['geometry'] = Polygon(row['geometry'].coords)
         
