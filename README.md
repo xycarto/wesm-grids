@@ -26,6 +26,7 @@ Tested and working. Improvements
 1. The current method is too slow for launching the EC2.  Time is taken up in pulling the needed Docker. Ideally, replaction of the server would suffice.  
 1. Better handling of credentials
 1. Make better connection between state and workunit
+1. Ensure Docker is pulled if not exist
 
 ## Required
 
